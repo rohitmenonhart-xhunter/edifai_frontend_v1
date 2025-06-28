@@ -5,7 +5,7 @@ import { handleApiError } from '@/utils/apiUtils';
 const AUTH_API_URL = `/api/auth`;
 
 // Fallback API URL in case proxy fails
-const FALLBACK_API_URL = 'https://server.edifai.in';
+const FALLBACK_API_URL = 'https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app';
 
 export interface LoginCredentials {
   email: string;
