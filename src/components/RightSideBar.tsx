@@ -23,7 +23,7 @@ function RightSideBar() {
       {/* Complete Few Courses Card */}
 
       <div className='flex justify-center  '>
-        <div className=" text-white lg:p-2 xl:p-4  pt-4 rounded-lg shadow-md lg:w-[300px] xl:w-[323px]  2xl:w-[343px] 3xl:h-[243px] flex flex-col justify-between col-span-1 bg-[url('../Assets/cardaward.png')] bg-cover bg-center"
+        <div className=" text-white lg:p-2 xl:p-4  pt-4 rounded-lg shadow-md lg:w-[300px] xl:w-[323px]  2xl:w-[343px] 3xl:h-[243px] flex flex-col justify-between col-span-1 bg-[url('../Assets/card-award.png')] bg-cover bg-center"
           style={{ backgroundImage: `url(${awardbg})` }}>
           <div className='flex flex-col justify-center items-start '>
             <h2 className="lg:text-[14px] xl:text-[16px] 2xl:text-[20px] 3xl:text-[24px] font-bold mb-2  ">Complete Few courses</h2>
@@ -57,7 +57,7 @@ function RightSideBar() {
 
 
   {/* <div className='flex justify-center  '>
-        <div className="relative object-fill text-white lg:p-2 xl:p-4  pt-4 rounded-lg shadow-md lg:w-[300px] xl:w-[323px]  2xl:w-[343px] 3xl:h-[243px] flex flex-col justify-between col-span-1 bg-[url('../Assets/cardaward.png')] bg-cover bg-center"
+        <div className="relative object-fill text-white lg:p-2 xl:p-4  pt-4 rounded-lg shadow-md lg:w-[300px] xl:w-[323px]  2xl:w-[343px] 3xl:h-[243px] flex flex-col justify-between col-span-1 bg-[url('../Assets/card-award.png')] bg-cover bg-center"
        
         >
 

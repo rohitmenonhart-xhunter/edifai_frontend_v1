@@ -12,7 +12,7 @@ import reference from '../Assets/Group 18499.png';
 import skill from '../Assets/Group 18500.png';
 import mentor from '../Assets/Group 18501.png';
 import human from '../Assets/human.png';
-import frame from '../Assets/frame.png';
+import frame from '../Assets/Frame.png';
 import { useNavigate, useParams } from 'react-router-dom';
 import Enroll from './Enroll';
 import { IoArrowBack } from 'react-icons/io5'; // Importing the left arrow icon
