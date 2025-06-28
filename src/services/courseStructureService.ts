@@ -48,25 +48,8 @@ interface Quiz {
   correctOption: number;
 }
 
-// Update API URL to use proxy
-const API_URL = `/api`;
-
-// Helper function to handle API request with fallback
-const makeApiRequest = async (url: string, options: any = {}) => {
-  try {
-    // First try with proxy
-    return await axios(url, options);
-  } catch (error: any) {
-    // If we get HTML instead of JSON, try the fallback URL
-    if (error.response && typeof error.response.data === 'string' && 
-        error.response.data.includes('<!DOCTYPE html>')) {
-      console.log('Received HTML response, trying fallback URL');
-      const fallbackUrl = `${FALLBACK_API_URL}${url}`;
-      return await axios(fallbackUrl, options);
-    }
-    throw error;
-  }
-};
+// Update API URL to use direct fallback URL
+const API_URL = `${FALLBACK_API_URL}/api`;
 
 const courseStructureService = {
   // Get course structure
@@ -77,7 +60,7 @@ const courseStructureService = {
         throw new Error('Authentication token not found');
       }
       
-      const response = await makeApiRequest(`${API_URL}/courses/${courseId}/structure`, {
+      const response = await axios.get(`${API_URL}/courses/${courseId}/structure`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -103,14 +86,13 @@ const courseStructureService = {
         throw new Error('Authentication token not found');
       }
       
-      const response = await makeApiRequest(
+      const response = await axios.post(
         `${API_URL}/courses/${courseId}/structure`, 
+        structure,
         {
-          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
-          },
-          data: structure
+          }
         }
       );
       return response.data;
@@ -127,14 +109,13 @@ const courseStructureService = {
         throw new Error('Authentication token not found');
       }
       
-      const response = await makeApiRequest(
+      const response = await axios.post(
         `${API_URL}/admin/courses/preview-content`,
+        { courseId, sectionTitle: section.title, content: section.content },
         {
-          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
-          },
-          data: { courseId, sectionTitle: section.title, content: section.content }
+          }
         }
       );
       return response.data;
@@ -151,14 +132,13 @@ const courseStructureService = {
         throw new Error('Authentication token not found');
       }
       
-      const response = await makeApiRequest(
+      const response = await axios.post(
         `${API_URL}/admin/courses/${courseId}/generate-all-content`,
+        structure,
         {
-          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
-          },
-          data: structure
+          }
         }
       );
       return response.data;
@@ -176,15 +156,14 @@ const courseStructureService = {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
-      const response = await makeApiRequest(
+      const response = await axios.put(
         `${API_URL}/courses/${courseId}/structure`,
+        structure,
         {
-          method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
-          },
-          data: structure
+          }
         }
       );
 

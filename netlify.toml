@@ -3,7 +3,7 @@
   to = "https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app/api/:splat"
   status = 200
   force = true
-  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"}
+  headers = {X-From = "Netlify"}
 
 [[redirects]]
   from = "/*"

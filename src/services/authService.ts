@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { handleApiError } from '@/utils/apiUtils';
 
-// Update API URL to use proxy
-const AUTH_API_URL = `/api/auth`;
-
 // Fallback API URL in case proxy fails
 const FALLBACK_API_URL = 'https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app';
+
+// Update API URL to use direct fallback URL
+const AUTH_API_URL = `${FALLBACK_API_URL}/api/auth`;
 
 export interface LoginCredentials {
   email: string;
@@ -29,29 +29,9 @@ export interface AuthResponse {
   };
 }
 
-// Helper function to handle API request with fallback
-const makeApiRequest = async (url: string, options: any = {}) => {
-  try {
-    // First try with proxy
-    return await axios(url, options);
-  } catch (error: any) {
-    // If we get HTML instead of JSON, try the fallback URL
-    if (error.response && typeof error.response.data === 'string' && 
-        error.response.data.includes('<!DOCTYPE html>')) {
-      console.log('Received HTML response, trying fallback URL');
-      const fallbackUrl = `${FALLBACK_API_URL}${url}`;
-      return await axios(fallbackUrl, options);
-    }
-    throw error;
-  }
-};
-
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
-    const response = await makeApiRequest(AUTH_API_URL + '/login', {
-      method: 'POST',
-      data: credentials
-    });
+    const response = await axios.post(AUTH_API_URL + '/login', credentials);
     return response.data.data;
   } catch (error) {
     throw handleApiError(error, 'Login failed');
@@ -60,10 +40,7 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 
 export const register = async (userData: RegisterData): Promise<AuthResponse> => {
   try {
-    const response = await makeApiRequest(AUTH_API_URL + '/register', {
-      method: 'POST',
-      data: userData
-    });
+    const response = await axios.post(AUTH_API_URL + '/register', userData);
     return response.data.data;
   } catch (error) {
     throw handleApiError(error, 'Registration failed');
@@ -72,10 +49,7 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
 
 export const forgotPassword = async (email: string): Promise<{ message: string }> => {
   try {
-    const response = await makeApiRequest(AUTH_API_URL + '/forgot-password', {
-      method: 'POST',
-      data: { email }
-    });
+    const response = await axios.post(AUTH_API_URL + '/forgot-password', { email });
     return response.data;
   } catch (error) {
     throw handleApiError(error, 'Failed to send password reset email');
@@ -84,10 +58,7 @@ export const forgotPassword = async (email: string): Promise<{ message: string }
 
 export const resetPassword = async (token: string, password: string): Promise<{ message: string }> => {
   try {
-    const response = await makeApiRequest(AUTH_API_URL + '/reset-password', {
-      method: 'POST',
-      data: { token, password }
-    });
+    const response = await axios.post(AUTH_API_URL + '/reset-password', { token, password });
     return response.data;
   } catch (error) {
     throw handleApiError(error, 'Failed to reset password');
@@ -96,7 +67,7 @@ export const resetPassword = async (token: string, password: string): Promise<{ 
 
 export const verifyToken = async (token: string): Promise<boolean> => {
   try {
-    await makeApiRequest(AUTH_API_URL + '/verify', {
+    await axios.get(AUTH_API_URL + '/verify', {
       headers: { Authorization: `Bearer ${token}` }
     });
     return true;

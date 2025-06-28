@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
 // Create a centralized API instance with authentication
 const api = axios.create({
+  baseURL: API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -19,7 +21,7 @@ api.interceptors.request.use(
     
     // Log requests in development
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`, config.data || '');
+      console.log(`API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`, config.data || '');
       console.log(`Request headers:`, config.headers);
     }
     
@@ -49,6 +51,7 @@ api.interceptors.response.use(
       if (error.message === 'Network Error') {
         console.error('Possible CORS issue. Check that the backend server is running and CORS is configured correctly.');
         console.error('Frontend origin:', window.location.origin);
+        console.error('Backend URL:', API_URL);
       }
       
       if (error.response) {
