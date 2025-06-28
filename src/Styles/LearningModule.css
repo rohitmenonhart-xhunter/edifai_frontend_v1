@@ -1,0 +1,704 @@
+Base styles for the Learning Module
+.flex {
+    display: flex;
+  }
+
+  .min-h-screen {
+    min-height: 100vh;
+  }
+
+  .bg-white {
+    background-color: #fff;
+  }
+
+  .p-4 {
+    padding: 1rem;
+  }
+
+  /* Left Sidebar */
+  .Left-Sidebar {
+    background-color: #fff;
+    border-radius: 1.5rem;
+    border: 1px solid #D8B4FE;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem;
+    width: 24rem;
+  }
+
+  .Left-Sidebar .flex {
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .learing {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F2937;
+  }
+
+  .text-gray-500 {
+    color: #6B7280;
+  }
+
+  .text-gray-500:hover {
+    color: #374151;
+  }
+
+  .Left-Sidebar svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  .Left-Sidebar .mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .Left-Sidebar .mb-4 .w-full {
+    width: 100%;
+    height: 1px;
+    background-color: #D1D5DB;
+  }
+
+  /* Learning Videos Section */
+  .Learning-Videos-Section {
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .Learning-Videos-Section.border-purple-500 {
+    border-color: #8B5CF6;
+  }
+
+  .Learning-Videos-Section button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+
+  .Learning-Videos-Section button:hover {
+    background-color: #fff;
+  }
+
+  .Learning-Videos-Section .font-medium {
+    font-weight: 500;
+    color: #374151;
+    font-size: 1rem;
+  }
+
+  .Learning-Videos-Section .text-sm {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .Learning-Videos-Section .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .Learning-Videos-Section .pb-4 {
+    padding-bottom: 1rem;
+  }
+
+  .Learning-Videos-Section .mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .Learning-Videos-Section .space-x-3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .Learning-Videos-Section .bg-violet-500 {
+    background-color: #8B5CF6;
+    border-radius: 9999px;
+    padding: 0.125rem;
+  }
+
+  .Learning-Videos-Section .text-white {
+    color: #fff;
+  }
+
+  .Learning-Videos-Section .text-green-600 {
+    color: #16A34A;
+  }
+
+  .Learning-Videos-Section .text-base {
+    font-size: 1rem;
+  }
+
+  .Learning-Videos-Section .mt-2 {
+    margin-top: 0.5rem;
+  }
+
+  .Learning-Videos-Section .mt-3 {
+    margin-top: 0.75rem;
+  }
+
+  .Learning-Videos-Section .border-violet-200 {
+    border: 1px solid #E9D5FF;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+  }
+
+  .Learning-Videos-Section .space-y-3 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .Learning-Videos-Section .mt-1 {
+    margin-top: 0.25rem;
+  }
+
+  .Learning-Videos-Section .mb-3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .Learning-Videos-Section .ml-8 {
+    margin-left: 2rem;
+  }
+
+  .Learning-Videos-Section .w-48 {
+    width: 12rem;
+  }
+
+  .Learning-Videos-Section .p-1 {
+    padding: 0.25rem;
+  }
+
+  .Learning-Videos-Section .py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .Learning-Videos-Section .transition-colors {
+    transition: color 0.3s;
+  }
+
+  .Learning-Videos-Section .duration-300 {
+    transition-duration: 300ms;
+  }
+
+  .Learning-Videos-Section .text-gray-600 {
+    color: #4B5563;
+  }
+
+  /* Quiz Section */
+  .Quiz-Section {
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .Quiz-Section button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Claim Your Course Certificate Section */
+  .Claim-Your-Course-Certificate-Section {
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .Claim-Your-Course-Certificate-Section button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+
+  /* Learning Materials Section */
+  .Learning-Materials-Section {
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .Learning-Materials-Section button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+
+  /* Right Side Content */
+  .Right-Side-Content {
+    flex: 1;
+    padding: 1rem;
+    margin: 1rem;
+    background-color: #fff;
+    border-radius: 1.5rem;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 2rem);
+  }
+
+  .Right-Side-Content .text-center {
+    text-align: center;
+  }
+
+  /* Media Queries for 1024px to 1920px */
+
+  /* 1024px and up (equivalent to Tailwind's lg) */
+  @media (min-width: 1024px) {
+    .p-4 {
+      padding: 1.5rem;
+    }
+
+    .Left-Sidebar {
+      margin: 1.5rem;
+      width: 450px;
+    }
+
+    .Left-Sidebar .flex {
+      padding: 2rem;
+    }
+
+    .learing {
+      font-size: 1.5rem;
+    }
+
+    .Left-Sidebar svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .Learning-Videos-Section {
+      margin-left: 2rem;
+      margin-right: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .Learning-Videos-Section button {
+      padding: 1rem 1.25rem;
+    }
+
+    .Learning-Videos-Section .font-medium {
+      font-size: 1.125rem;
+    }
+
+    .Learning-Videos-Section .text-sm {
+      font-size: 1rem;
+    }
+
+    .Learning-Videos-Section .px-4 {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .Learning-Videos-Section .pb-4 {
+      padding-bottom: 1.25rem;
+    }
+
+    .Learning-Videos-Section .mb-4 {
+      margin-bottom: 1.5rem;
+    }
+
+    .Learning-Videos-Section .py-3 {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .Learning-Videos-Section .px-3 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .Learning-Videos-Section .bg-violet-500 svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .Learning-Videos-Section .text-base {
+      font-size: 1.125rem;
+    }
+
+    .Learning-Videos-Section .mt-2 {
+      margin-top: 0.75rem;
+    }
+
+    .Learning-Videos-Section .mt-3 {
+      margin-top: 1rem;
+    }
+
+    .Learning-Videos-Section .p-3 {
+      padding: 1rem;
+    }
+
+    .Learning-Videos-Section .space-y-3 {
+      gap: 1rem;
+    }
+
+    .Learning-Videos-Section .mt-1 {
+      margin-top: 0.5rem;
+    }
+
+    .Learning-Videos-Section .mb-3 {
+      margin-bottom: 1rem;
+    }
+
+    .Learning-Videos-Section .ml-8 {
+      margin-left: 2.5rem;
+    }
+
+    .Learning-Videos-Section .mt-3 {
+      margin-top: 1rem;
+    }
+
+    .Learning-Videos-Section .w-48 {
+      width: 14rem;
+    }
+
+    .Learning-Videos-Section .text-sm {
+      font-size: 1rem;
+    }
+
+    .Learning-Videos-Section .py-2 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .Learning-Videos-Section .text-gray-600 {
+      font-size: 1.125rem;
+    }
+
+    .Quiz-Section {
+      margin-left: 2rem;
+      margin-right: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .Quiz-Section button {
+      padding: 1rem 1.25rem;
+    }
+
+    .Quiz-Section .font-medium {
+      font-size: 1.125rem;
+    }
+
+    .Quiz-Section .text-sm {
+      font-size: 1rem;
+    }
+
+    .Quiz-Section svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section {
+      margin-left: 2rem;
+      margin-right: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section button {
+      padding: 1rem 1.25rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section .font-medium {
+      font-size: 1.125rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section .text-sm {
+      font-size: 1rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .Learning-Materials-Section {
+      margin-left: 2rem;
+      margin-right: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .Learning-Materials-Section button {
+      padding: 1rem 1.25rem;
+    }
+
+    .Learning-Materials-Section .font-medium {
+      font-size: 1.125rem;
+    }
+
+    .Learning-Materials-Section .text-sm {
+      font-size: 1rem;
+    }
+
+    .Learning-Materials-Section svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .Right-Side-Content {
+      padding: 1.5rem;
+      margin: 1.5rem;
+    }
+
+    .Right-Side-Content .text-base {
+      font-size: 1.125rem;
+    }
+  }
+
+  /* 1280px and up (equivalent to Tailwind's xl) */
+  @media (min-width: 1280px) {
+    .p-4 {
+      padding: 2rem;
+    }
+
+    .Left-Sidebar {
+      margin: 2rem;
+      width: 500px;
+    }
+
+    .Left-Sidebar .flex {
+      padding: 2.5rem;
+    }
+
+    .learing {
+      font-size: 1.875rem;
+    }
+
+    .Left-Sidebar svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .Learning-Videos-Section {
+      margin-left: 2.5rem;
+      margin-right: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .Learning-Videos-Section button {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .Learning-Videos-Section .font-medium {
+      font-size: 1.25rem;
+    }
+
+    .Learning-Videos-Section .text-sm {
+      font-size: 1.125rem;
+    }
+
+    .Learning-Videos-Section .px-4 {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .Learning-Videos-Section .pb-4 {
+      padding-bottom: 1.5rem;
+    }
+
+    .Learning-Videos-Section .mb-4 {
+      margin-bottom: 2rem;
+    }
+
+    .Learning-Videos-Section .py-3 {
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .Learning-Videos-Section .px-3 {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .Learning-Videos-Section .bg-violet-500 svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .Learning-Videos-Section .text-base {
+      font-size: 1.25rem;
+    }
+
+    .Learning-Videos-Section .mt-2 {
+      margin-top: 1rem;
+    }
+
+    .Learning-Videos-Section .mt-3 {
+      margin-top: 1.25rem;
+    }
+
+    .Learning-Videos-Section .p-3 {
+      padding: 1.25rem;
+    }
+
+    .Learning-Videos-Section .space-y-3 {
+      gap: 1.25rem;
+    }
+
+    .Learning-Videos-Section .mt-1 {
+      margin-top: 0.75rem;
+    }
+
+    .Learning-Videos-Section .mb-3 {
+      margin-bottom: 1.25rem;
+    }
+
+    .Learning-Videos-Section .ml-8 {
+      margin-left: 3rem;
+    }
+
+    .Learning-Videos-Section .mt-3 {
+      margin-top: 1.25rem;
+    }
+
+    .Learning-Videos-Section .w-48 {
+      width: 16rem;
+    }
+
+    .Learning-Videos-Section .text-sm {
+      font-size: 1.125rem;
+    }
+
+    .Learning-Videos-Section .py-2 {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .Learning-Videos-Section .text-gray-600 {
+      font-size: 1.25rem;
+    }
+
+    .Quiz-Section {
+      margin-left: 2.5rem;
+      margin-right: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .Quiz-Section button {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .Quiz-Section .font-medium {
+      font-size: 1.25rem;
+    }
+
+    .Quiz-Section .text-sm {
+      font-size: 1.125rem;
+    }
+
+    .Quiz-Section svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section {
+      margin-left: 2.5rem;
+      margin-right: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section button {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section .font-medium {
+      font-size: 1.25rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section .text-sm {
+      font-size: 1.125rem;
+    }
+
+    .Claim-Your-Course-Certificate-Section svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .Learning-Materials-Section {
+      margin-left: 2.5rem;
+      margin-right: 2.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .Learning-Materials-Section button {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .Learning-Materials-Section .font-medium {
+      font-size: 1.25rem;
+    }
+
+    .Learning-Materials-Section .text-sm {
+      font-size: 1.125rem;
+    }
+
+    .Learning-Materials-Section svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .Right-Side-Content {
+      padding: 2rem;
+      margin: 2rem;
+    }
+
+    .Right-Side-Content .text-base {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* 1536px and up (equivalent to Tailwind's 2xl, covering up to 1920px) */
+  @media (min-width: 1536px) {
+    .p-4 {
+      padding: 0.5rem; /* Reduced padding to stretch layout to screen edges */
+    }
+
+    .Left-Sidebar {
+      margin: 0;
+      margin-left: 0.5rem; /* Small gap from left edge */
+      width: 550px;
+    }
+
+    .Right-Side-Content {
+      margin: 0;
+      margin-right: 0.5rem; /* Small gap from right edge */
+    }
+  }
