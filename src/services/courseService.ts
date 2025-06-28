@@ -3,6 +3,9 @@ import { getAuthHeader } from '@/utils/authUtils';
 import { toast } from 'sonner';
 import { API_URL } from '@/config/api';
 
+// Fallback API URL in case proxy fails
+const FALLBACK_API_URL = 'https://server.edifai.in';
+
 // Course interfaces
 export interface ICourse {
   _id: string;
@@ -56,13 +59,30 @@ export interface IMentor {
 const API_ENDPOINT = `/api/courses`;
 const MENTORS_ENDPOINT = `/api/mentors`;
 
+// Helper function to handle API request with fallback
+const makeApiRequest = async (url: string, options: any = {}) => {
+  try {
+    // First try with proxy
+    return await axios(url, options);
+  } catch (error: any) {
+    // If we get HTML instead of JSON, try the fallback URL
+    if (error.response && typeof error.response.data === 'string' && 
+        error.response.data.includes('<!DOCTYPE html>')) {
+      console.log('Received HTML response, trying fallback URL');
+      const fallbackUrl = `${FALLBACK_API_URL}${url}`;
+      return await axios(fallbackUrl, options);
+    }
+    throw error;
+  }
+};
+
 // Get all courses
 export const getCourses = async (): Promise<ICourse[]> => {
   try {
     console.log("Attempting to fetch courses from:", API_ENDPOINT);
     const headers = await getAuthHeader();
     
-    const response = await axios.get(API_ENDPOINT, { 
+    const response = await makeApiRequest(API_ENDPOINT, { 
       headers,
       timeout: 10000 // 10 second timeout
     });
@@ -90,7 +110,7 @@ export const getCourses = async (): Promise<ICourse[]> => {
 export const getCourseById = async (id: string): Promise<ICourse> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.get(`${API_ENDPOINT}/${id}`, { headers });
+    const response = await makeApiRequest(`${API_ENDPOINT}/${id}`, { headers });
     return response.data.data;
   } catch (error) {
     console.error('Error fetching course details:', error);
@@ -102,7 +122,11 @@ export const getCourseById = async (id: string): Promise<ICourse> => {
 export const createCourse = async (courseData: Partial<ICourse>): Promise<ICourse> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.post(API_ENDPOINT, courseData, { headers });
+    const response = await makeApiRequest(API_ENDPOINT, {
+      method: 'POST',
+      headers,
+      data: courseData
+    });
     return response.data.data;
   } catch (error) {
     console.error('Error creating course:', error);
@@ -114,7 +138,11 @@ export const createCourse = async (courseData: Partial<ICourse>): Promise<ICours
 export const updateCourse = async (id: string, courseData: Partial<ICourse>): Promise<ICourse> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.put(`${API_ENDPOINT}/${id}`, courseData, { headers });
+    const response = await makeApiRequest(`${API_ENDPOINT}/${id}`, {
+      method: 'PUT',
+      headers,
+      data: courseData
+    });
     return response.data.data;
   } catch (error) {
     console.error('Error updating course:', error);
@@ -126,7 +154,10 @@ export const updateCourse = async (id: string, courseData: Partial<ICourse>): Pr
 export const deleteCourse = async (id: string): Promise<void> => {
   try {
     const headers = await getAuthHeader();
-    await axios.delete(`${API_ENDPOINT}/${id}`, { headers });
+    await makeApiRequest(`${API_ENDPOINT}/${id}`, {
+      method: 'DELETE',
+      headers
+    });
   } catch (error) {
     console.error('Error deleting course:', error);
     throw error;
@@ -137,7 +168,11 @@ export const deleteCourse = async (id: string): Promise<void> => {
 export const enrollInCourse = async (courseId: string): Promise<ICourse> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.put(`${API_ENDPOINT}/${courseId}/enroll`, {}, { headers });
+    const response = await makeApiRequest(`${API_ENDPOINT}/${courseId}/enroll`, {
+      method: 'PUT',
+      headers,
+      data: {}
+    });
     return response.data.data;
   } catch (error) {
     console.error('Error enrolling in course:', error);
@@ -149,7 +184,11 @@ export const enrollInCourse = async (courseId: string): Promise<ICourse> => {
 export const addCourseReview = async (courseId: string, rating: number, comment: string): Promise<ICourse> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.post(`${API_ENDPOINT}/${courseId}/reviews`, { rating, comment }, { headers });
+    const response = await makeApiRequest(`${API_ENDPOINT}/${courseId}/reviews`, {
+      method: 'POST',
+      headers,
+      data: { rating, comment }
+    });
     return response.data.data;
   } catch (error) {
     console.error('Error adding course review:', error);
@@ -164,7 +203,7 @@ export const getMentors = async (): Promise<IMentor[]> => {
     const headers = await getAuthHeader();
     console.log("Using headers:", headers);
     
-    const response = await axios.get(MENTORS_ENDPOINT, { 
+    const response = await makeApiRequest(MENTORS_ENDPOINT, { 
       headers,
       timeout: 10000 // 10 second timeout
     });
@@ -200,7 +239,7 @@ export const getMentors = async (): Promise<IMentor[]> => {
 export const getMentorById = async (id: string): Promise<IMentor> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.get(`${MENTORS_ENDPOINT}/${id}`, { headers });
+    const response = await makeApiRequest(`${MENTORS_ENDPOINT}/${id}`, { headers });
     return response.data.data;
   } catch (error) {
     console.error('Error fetching mentor details:', error);
@@ -212,7 +251,7 @@ export const getMentorById = async (id: string): Promise<IMentor> => {
 export const getMentorCourses = async (mentorId: string): Promise<ICourse[]> => {
   try {
     const headers = await getAuthHeader();
-    const response = await axios.get(`${MENTORS_ENDPOINT}/${mentorId}/courses`, { headers });
+    const response = await makeApiRequest(`${MENTORS_ENDPOINT}/${mentorId}/courses`, { headers });
     return response.data.data;
   } catch (error) {
     console.error('Error fetching mentor courses:', error);
