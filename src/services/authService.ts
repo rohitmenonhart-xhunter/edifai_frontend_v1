@@ -36,18 +36,19 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     console.log("Login response:", response.data);
     
     // Check if response has the expected structure
-    if (!response.data || !response.data.data) {
+    // The response might have data directly or nested in a data property
+    const responseData = response.data.data || response.data;
+    
+    if (!responseData || !responseData.token || !responseData.user) {
       console.error("Invalid response structure:", response.data);
       throw new Error('Invalid response structure from server');
     }
     
     // Store token in localStorage
-    if (response.data.data.token) {
-      localStorage.setItem('token', response.data.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
-    }
+    localStorage.setItem('token', responseData.token);
+    localStorage.setItem('user', JSON.stringify(responseData.user));
     
-    return response.data.data;
+    return responseData;
   } catch (error) {
     console.log("Login error:", error);
     throw handleApiError(error, 'Login failed');
@@ -57,20 +58,22 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 export const register = async (userData: RegisterData): Promise<AuthResponse> => {
   try {
     const response = await axios.post(AUTH_API_URL + '/register', userData);
+    console.log("Register response:", response.data);
     
     // Check if response has the expected structure
-    if (!response.data || !response.data.data) {
+    // The response might have data directly or nested in a data property
+    const responseData = response.data.data || response.data;
+    
+    if (!responseData || !responseData.token || !responseData.user) {
       console.error("Invalid response structure:", response.data);
       throw new Error('Invalid response structure from server');
     }
     
     // Store token in localStorage
-    if (response.data.data.token) {
-      localStorage.setItem('token', response.data.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
-    }
+    localStorage.setItem('token', responseData.token);
+    localStorage.setItem('user', JSON.stringify(responseData.user));
     
-    return response.data.data;
+    return responseData;
   } catch (error) {
     throw handleApiError(error, 'Registration failed');
   }
