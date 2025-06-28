@@ -185,7 +185,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         </form>
         {/* <div className="mt-8 text-left">
           <p className="text-black text-sm font-bold font-mont pt-3">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link to="/signup">
               <span className="text-black underline font-bold cursor-pointer">
                 Sign up
@@ -231,12 +231,10 @@ const Login: React.FC = () => {
         
         console.log("Login response:", response);
         
-        if (response.success) {
-          toast.success("Login successful!");
-          navigate("/");
-        } else {
-          toast.error(response.message || "Login failed. Please check your credentials.");
-        }
+        // The login was successful if we got here without an exception
+        // since the response doesn't have a success property
+        toast.success("Login successful!");
+        navigate("/profile"); // Redirect to profile page after successful login
       } catch (error: any) {
         console.error("Login error:", error);
         

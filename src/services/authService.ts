@@ -34,10 +34,15 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     console.log("Attempting login with: ", credentials);
     const response = await axios.post(AUTH_API_URL + '/login', credentials);
     console.log("Login response:", response.data);
+    console.log("Login response structure:", JSON.stringify(response.data, null, 2));
     
     // Check if response has the expected structure
     // The response might have data directly or nested in a data property
     const responseData = response.data.data || response.data;
+    
+    console.log("Extracted responseData:", responseData);
+    console.log("Has token:", !!responseData?.token);
+    console.log("Has user:", !!responseData?.user);
     
     if (!responseData || !responseData.token || !responseData.user) {
       console.error("Invalid response structure:", response.data);
