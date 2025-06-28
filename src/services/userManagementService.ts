@@ -2,6 +2,9 @@ import axios from 'axios';
 import { handleApiError } from '@/utils/apiUtils';
 import { API_URL } from '@/config/api';
 
+// Fallback API URL in case proxy fails
+const FALLBACK_API_URL = 'https://server.edifai.in';
+
 // Update API URLs to use proxy
 const ADMIN_API_URL = `/api/admin`;
 
@@ -20,6 +23,23 @@ interface User {
   username?: string;
 }
 
+// Helper function to handle API request with fallback
+const makeApiRequest = async (url: string, options: any = {}) => {
+  try {
+    // First try with proxy
+    return await axios(url, options);
+  } catch (error: any) {
+    // If we get HTML instead of JSON, try the fallback URL
+    if (error.response && typeof error.response.data === 'string' && 
+        error.response.data.includes('<!DOCTYPE html>')) {
+      console.log('Received HTML response, trying fallback URL');
+      const fallbackUrl = `${FALLBACK_API_URL}${url}`;
+      return await axios(fallbackUrl, options);
+    }
+    throw error;
+  }
+};
+
 /**
  * Get all users (admin only)
  */
@@ -28,7 +48,7 @@ export const getAllUsers = async (): Promise<User[]> => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('No authentication token found');
 
-    const response = await axios.get(`${ADMIN_API_URL}/users`, {
+    const response = await makeApiRequest(`${ADMIN_API_URL}/users`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -48,13 +68,14 @@ export const toggleUserEnrollmentAccess = async (userId: string): Promise<User> 
     const token = localStorage.getItem('token');
     if (!token) throw new Error('No authentication token found');
 
-    const response = await axios.put(
+    const response = await makeApiRequest(
       `${ADMIN_API_URL}/users/${userId}/toggle-enrollment`,
-      {},
       {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        data: {}
       }
     );
 
@@ -72,7 +93,7 @@ export const getUserEnrollmentStatus = async (userId: string): Promise<User> => 
     const token = localStorage.getItem('token');
     if (!token) throw new Error('No authentication token found');
 
-    const response = await axios.get(
+    const response = await makeApiRequest(
       `${ADMIN_API_URL}/users/${userId}/enrollment-status`,
       {
         headers: {
