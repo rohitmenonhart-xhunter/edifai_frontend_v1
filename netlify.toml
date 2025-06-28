@@ -3,6 +3,13 @@
   to = "/index.html"
   status = 200
 
+[[redirects]]
+  from = "/api/*"
+  to = "https://server.edifai.in/api/:splat"
+  status = 200
+  force = true
+  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"}
+
 [build]
   command = "npm run build"
   publish = "dist"
@@ -13,9 +20,9 @@
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production.environment]
-  VITE_API_URL = "https://server.edifai.in"
+  VITE_API_URL = ""
 
 # Deploy Preview context: all deploys generated from a pull/merge request will
 # inherit these settings.
 [context.deploy-preview.environment]
-  VITE_API_URL = "https://server.edifai.in" 
+  VITE_API_URL = "" 

@@ -2,6 +2,9 @@ import axios from 'axios';
 import { handleApiError } from '@/utils/apiUtils';
 import { API_URL } from '@/config/api';
 
+// Update API URLs to use proxy
+const ADMIN_API_URL = `/api/admin`;
+
 interface User {
   _id: string;
   name: string;
@@ -25,7 +28,7 @@ export const getAllUsers = async (): Promise<User[]> => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('No authentication token found');
 
-    const response = await axios.get(`${API_URL}/api/admin/users`, {
+    const response = await axios.get(`${ADMIN_API_URL}/users`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -46,7 +49,7 @@ export const toggleUserEnrollmentAccess = async (userId: string): Promise<User> 
     if (!token) throw new Error('No authentication token found');
 
     const response = await axios.put(
-      `${API_URL}/api/admin/users/${userId}/toggle-enrollment`,
+      `${ADMIN_API_URL}/users/${userId}/toggle-enrollment`,
       {},
       {
         headers: {
@@ -70,7 +73,7 @@ export const getUserEnrollmentStatus = async (userId: string): Promise<User> => 
     if (!token) throw new Error('No authentication token found');
 
     const response = await axios.get(
-      `${API_URL}/api/admin/users/${userId}/enrollment-status`,
+      `${ADMIN_API_URL}/users/${userId}/enrollment-status`,
       {
         headers: {
           Authorization: `Bearer ${token}`

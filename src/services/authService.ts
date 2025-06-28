@@ -1,76 +1,88 @@
-import api from '../lib/api';
+import axios from 'axios';
+import { handleApiError } from '@/utils/apiUtils';
 
-// Interface for user data
-export interface UserData {
-  name?: string;
+// Update API URL to use proxy
+const AUTH_API_URL = `/api/auth`;
+
+export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-// Authentication service
-const authService = {
-  // Register new user
-  async register(userData: UserData): Promise<any> {
-    const response = await api.post('/api/auth/register', userData);
-    
-    if (response.data.success && response.data.token) {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('token', response.data.token);
-    }
-    
-    return response.data;
-  },
-  
-  // Login user
-  async login(userData: { email: string; password: string }): Promise<any> {
-    try {
-      console.log("Sending login request to:", '/api/auth/login');
-      console.log("With credentials:", { email: userData.email, passwordLength: userData.password.length });
-      
-      const response = await api.post('/api/auth/login', userData);
-      
-      console.log("Login response received:", response.data);
-      
-      if (response.data.success && response.data.token) {
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('token', response.data.token);
-      }
-      
-      return response.data;
-    } catch (error: any) {
-      console.error("Login request error:", error.message);
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-      }
-      throw error;
-    }
-  },
-  
-  // Logout user
-  async logout(): Promise<void> {
-    await api.get('/api/auth/logout');
-    
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('token');
-  },
-  
-  // Get current user
-  async getCurrentUser(): Promise<any> {
-    const response = await api.get('/api/auth/me');
-    
-    return response.data;
-  },
-  
-  // Check if user is authenticated
-  isAuthenticated(): boolean {
-    return localStorage.getItem('isAuthenticated') === 'true';
-  },
-  
-  // Get auth token
-  getToken(): string | null {
-    return localStorage.getItem('token');
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  username?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+}
+
+export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
+  try {
+    const response = await axios.post(`${AUTH_API_URL}/login`, credentials);
+    return response.data.data;
+  } catch (error) {
+    throw handleApiError(error, 'Login failed');
   }
 };
 
-export default authService; 
+export const register = async (userData: RegisterData): Promise<AuthResponse> => {
+  try {
+    const response = await axios.post(`${AUTH_API_URL}/register`, userData);
+    return response.data.data;
+  } catch (error) {
+    throw handleApiError(error, 'Registration failed');
+  }
+};
+
+export const forgotPassword = async (email: string): Promise<{ message: string }> => {
+  try {
+    const response = await axios.post(`${AUTH_API_URL}/forgot-password`, { email });
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error, 'Failed to send password reset email');
+  }
+};
+
+export const resetPassword = async (token: string, password: string): Promise<{ message: string }> => {
+  try {
+    const response = await axios.post(`${AUTH_API_URL}/reset-password`, { token, password });
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error, 'Failed to reset password');
+  }
+};
+
+export const verifyToken = async (token: string): Promise<boolean> => {
+  try {
+    await axios.get(`${AUTH_API_URL}/verify`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const logout = (): void => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+};
+
+export default {
+  login,
+  register,
+  forgotPassword,
+  resetPassword,
+  verifyToken,
+  logout
+}; 

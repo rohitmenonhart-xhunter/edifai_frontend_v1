@@ -53,8 +53,8 @@ export interface IMentor {
 }
 
 // API endpoints - using the imported API_URL
-const API_ENDPOINT = `${API_URL}/api/courses`;
-const MENTORS_ENDPOINT = `${API_URL}/api/mentors`;
+const API_ENDPOINT = `/api/courses`;
+const MENTORS_ENDPOINT = `/api/mentors`;
 
 // Get all courses
 export const getCourses = async (): Promise<ICourse[]> => {

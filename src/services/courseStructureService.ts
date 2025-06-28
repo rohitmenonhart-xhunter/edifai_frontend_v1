@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { handleApiError } from '@/utils/apiUtils';
 
 interface Section {
   id: string;
@@ -22,11 +23,30 @@ interface Chapter {
 }
 
 interface CourseStructure {
+  _id: string;
+  title: string;
+  description: string;
   chapters: Chapter[];
 }
 
-// Replace process.env with import.meta.env for Vite
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+interface Lesson {
+  _id: string;
+  title: string;
+  description: string;
+  content: string;
+  videoUrl?: string;
+  quizzes?: Quiz[];
+}
+
+interface Quiz {
+  _id: string;
+  question: string;
+  options: string[];
+  correctOption: number;
+}
+
+// Update API URL to use proxy
+const API_URL = `/api`;
 
 const courseStructureService = {
   // Get course structure
@@ -37,7 +57,7 @@ const courseStructureService = {
         throw new Error('Authentication token not found');
       }
       
-      const response = await axios.get(`${API_URL}/api/courses/${courseId}/structure`, {
+      const response = await axios.get(`${API_URL}/courses/${courseId}/structure`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -51,8 +71,7 @@ const courseStructureService = {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('Error fetching course structure:', error);
-      throw error;
+      throw handleApiError(error, 'Error fetching course structure');
     }
   },
 
@@ -65,7 +84,7 @@ const courseStructureService = {
       }
       
       const response = await axios.post(
-        `${API_URL}/api/courses/${courseId}/structure`, 
+        `${API_URL}/courses/${courseId}/structure`, 
         structure,
         {
           headers: {
@@ -75,8 +94,7 @@ const courseStructureService = {
       );
       return response.data;
     } catch (error) {
-      console.error('Error saving course structure:', error);
-      throw error;
+      throw handleApiError(error, 'Error saving course structure');
     }
   },
 
@@ -89,7 +107,7 @@ const courseStructureService = {
       }
       
       const response = await axios.post(
-        `${API_URL}/api/admin/courses/preview-content`,
+        `${API_URL}/admin/courses/preview-content`,
         { courseId, sectionTitle: section.title, content: section.content },
         {
           headers: {
@@ -99,8 +117,7 @@ const courseStructureService = {
       );
       return response.data;
     } catch (error) {
-      console.error('Error previewing AI content:', error);
-      throw error;
+      throw handleApiError(error, 'Error previewing AI content');
     }
   },
 
@@ -113,7 +130,7 @@ const courseStructureService = {
       }
       
       const response = await axios.post(
-        `${API_URL}/api/admin/courses/${courseId}/generate-all-content`,
+        `${API_URL}/admin/courses/${courseId}/generate-all-content`,
         structure,
         {
           headers: {
@@ -123,11 +140,36 @@ const courseStructureService = {
       );
       return response.data;
     } catch (error) {
-      console.error('Error generating course content:', error);
-      throw error;
+      throw handleApiError(error, 'Error generating course content');
+    }
+  },
+
+  // Update course structure
+  updateCourseStructure: async (
+    courseId: string,
+    structure: CourseStructure
+  ): Promise<CourseStructure> => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await axios.put(
+        `${API_URL}/courses/${courseId}/structure`,
+        structure,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      return response.data.data;
+    } catch (error) {
+      throw handleApiError(error, 'Error updating course structure');
     }
   }
 };
 
 export default courseStructureService;
-export type { CourseStructure, Chapter, Subchapter, Section }; 
+export type { CourseStructure, Chapter, Subchapter, Section, Lesson, Quiz }; 
