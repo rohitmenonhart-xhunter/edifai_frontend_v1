@@ -234,7 +234,7 @@ const Login: React.FC = () => {
         // The login was successful if we got here without an exception
         // since the response doesn't have a success property
         toast.success("Login successful!");
-        navigate("/profile"); // Redirect to profile page after successful login
+        navigate("/"); // Redirect to home page after successful login
       } catch (error: any) {
         console.error("Login error:", error);
         

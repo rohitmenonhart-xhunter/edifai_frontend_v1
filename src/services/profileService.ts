@@ -36,12 +36,13 @@ export interface ScheduleEvent {
 }
 
 // Update API URL to use direct fallback URL
-const PROFILE_API_URL = `${FALLBACK_API_URL}/api/users/profile`;
+const PROFILE_API_URL = `${FALLBACK_API_URL}/api/users`;
 
 export interface UserProfile {
   _id: string;
   name: string;
   email: string;
+  role?: string;
   username?: string;
   avatar?: string;
   location?: string;
@@ -56,15 +57,37 @@ export const getUserProfile = async (): Promise<UserProfile> => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('No authentication token found');
 
-    const response = await axios.get(PROFILE_API_URL, {
+    const response = await axios.get(`${PROFILE_API_URL}/profile`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    return response.data.data;
+    return response.data.data || {};
   } catch (error) {
-    throw handleApiError(error, 'Error fetching user profile');
+    console.error('Error fetching user profile:', error);
+    // Return a default profile rather than throwing an error
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        return {
+          _id: userData._id || '',
+          name: userData.name || 'Student',
+          email: userData.email || '',
+          role: userData.role || 'user'
+        };
+      } catch (e) {
+        console.error('Error parsing user data from localStorage:', e);
+      }
+    }
+    
+    return {
+      _id: '',
+      name: 'Student',
+      email: '',
+      role: 'user'
+    };
   }
 };
 
@@ -90,11 +113,18 @@ export const updateUserProfile = async (profileData: Partial<UserProfile>): Prom
 // Get user schedule events
 export const getUserSchedule = async (): Promise<ScheduleEvent[]> => {
   try {
-    const response = await axios.get(`${FALLBACK_API_URL}/api/schedule`);
-    return response.data.data;
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found');
+    
+    const response = await axios.get(`${FALLBACK_API_URL}/api/users/schedule`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data.data || [];
   } catch (error) {
     console.error('Error fetching user schedule:', error);
-    throw error;
+    return []; // Return empty array on error instead of throwing
   }
 };
 
@@ -133,22 +163,49 @@ export const deleteScheduleEvent = async (eventId: string): Promise<void> => {
 // Get enrolled courses
 export const getEnrolledCourses = async (): Promise<any[]> => {
   try {
-    const response = await axios.get(`${FALLBACK_API_URL}/api/courses/enrolled`);
-    return response.data.data;
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found');
+    
+    const response = await axios.get(`${FALLBACK_API_URL}/api/courses/enrolled`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data.data || [];
   } catch (error) {
     console.error('Error fetching enrolled courses:', error);
-    throw error;
+    return []; // Return empty array on error instead of throwing
   }
 };
 
 // Get user's activity/progress
 export const getUserActivity = async (): Promise<any> => {
   try {
-    const response = await axios.get(`${FALLBACK_API_URL}/api/profile/activity`);
-    return response.data.data;
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found');
+
+    const response = await axios.get(`${FALLBACK_API_URL}/api/users/activity`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data.data || {
+      learningHours: 0,
+      certificatesEarned: 0,
+      coursesEnrolled: 0,
+      progress: 0,
+      recentActivity: []
+    };
   } catch (error) {
     console.error('Error fetching user activity:', error);
-    throw error;
+    // Return default values on error
+    return {
+      learningHours: 0,
+      certificatesEarned: 0,
+      coursesEnrolled: 0,
+      progress: 0,
+      recentActivity: []
+    };
   }
 };
 
