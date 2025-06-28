@@ -31,9 +31,25 @@ export interface AuthResponse {
 
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
+    console.log("Attempting login with: ", credentials);
     const response = await axios.post(AUTH_API_URL + '/login', credentials);
+    console.log("Login response:", response.data);
+    
+    // Check if response has the expected structure
+    if (!response.data || !response.data.data) {
+      console.error("Invalid response structure:", response.data);
+      throw new Error('Invalid response structure from server');
+    }
+    
+    // Store token in localStorage
+    if (response.data.data.token) {
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    }
+    
     return response.data.data;
   } catch (error) {
+    console.log("Login error:", error);
     throw handleApiError(error, 'Login failed');
   }
 };
@@ -41,6 +57,19 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 export const register = async (userData: RegisterData): Promise<AuthResponse> => {
   try {
     const response = await axios.post(AUTH_API_URL + '/register', userData);
+    
+    // Check if response has the expected structure
+    if (!response.data || !response.data.data) {
+      console.error("Invalid response structure:", response.data);
+      throw new Error('Invalid response structure from server');
+    }
+    
+    // Store token in localStorage
+    if (response.data.data.token) {
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    }
+    
     return response.data.data;
   } catch (error) {
     throw handleApiError(error, 'Registration failed');

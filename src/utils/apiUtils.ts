@@ -8,6 +8,8 @@ import axios, { AxiosError } from 'axios';
  * @returns Empty array or object depending on context
  */
 export const handleApiError = (error: unknown, defaultMessage: string = 'An error occurred') => {
+  console.error('API Error Details:', error);
+  
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError;
     
@@ -15,6 +17,12 @@ export const handleApiError = (error: unknown, defaultMessage: string = 'An erro
     if (axiosError.response) {
       const status = axiosError.response.status;
       const data = axiosError.response.data as any;
+      
+      console.log('API Error Response:', {
+        status,
+        data,
+        headers: axiosError.response.headers
+      });
       
       // Show error message from API if available
       const message = data?.message || defaultMessage;
@@ -30,14 +38,23 @@ export const handleApiError = (error: unknown, defaultMessage: string = 'An erro
       } else {
         toast.error(message);
       }
+    } else if (axiosError.request) {
+      // The request was made but no response was received
+      console.log('No response received:', axiosError.request);
+      toast.error('Server did not respond. Please try again later.');
     } else {
-      // Network error or request cancelled
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error setting up request:', axiosError.message);
       toast.error('Network error. Please check your connection.');
     }
+  } else if (error instanceof Error) {
+    // Handle non-Axios errors
+    console.log('Non-Axios error:', error.message);
+    toast.error(error.message || defaultMessage);
   } else {
     // Generic error
     toast.error(defaultMessage);
-    console.error('API Error:', error);
+    console.error('Unknown API Error:', error);
   }
   
   // Return empty result based on expected return type context
