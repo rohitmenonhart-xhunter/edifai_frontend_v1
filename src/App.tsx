@@ -1,4 +1,4 @@
-import React, { ErrorInfo, ReactNode } from 'react';
+import React, { ErrorInfo, ReactNode, createContext, useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -38,6 +38,64 @@ import AdminUserManagementPage from './pages/AdminUserManagementPage';
 
 // Services
 import authService from "./services/authService";
+
+// Create AuthContext
+interface AuthContextType {
+  isAuthenticated: boolean;
+  user: any | null;
+  checkAuthStatus: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  user: null,
+  checkAuthStatus: () => {}
+});
+
+// AuthProvider component
+const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any | null>(null);
+
+  const checkAuthStatus = () => {
+    const hasToken = authService.isAuthenticated();
+    setIsAuthenticated(hasToken);
+    
+    if (hasToken) {
+      try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          setUser(JSON.parse(userStr));
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+    
+    // Listen for storage events to detect login/logout in other tabs
+    window.addEventListener('storage', checkAuthStatus);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+    };
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, user, checkAuthStatus }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// Custom hook to use auth context
+export const useAuth = () => useContext(AuthContext);
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
@@ -96,8 +154,8 @@ const queryClient = new QueryClient({
 const App: React.FC = () => {
   // Admin Route Component (redirects to home if not admin)
   const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-    const isAuthenticated = authService.isAuthenticated();
-    return isAuthenticated ? children : <Navigate to="/LoginPage" />;
+    const { isAuthenticated, user } = useAuth();
+    return isAuthenticated && user?.role === 'admin' ? children : <Navigate to="/LoginPage" />;
   };
 
   return (
@@ -107,40 +165,42 @@ const App: React.FC = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/Login" element={<LoginPage />} />
-              <Route path="/Signup" element={<Signup />} />
-              <Route path="/LoginPage" element={<LoginPage />} />
-              <Route path="/About" element={<About />} />
-              <Route path="/Contact" element={<Contact />} />
-              <Route path="/course" element={<Course />} />
-              <Route path="/book" element={<Book />} />
-              <Route path="/books" element={<BooksPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/wishlist" element={<WishlistPage />} />
-              <Route path="/learning/overview" element={<LearningOverview />} />
-              <Route path="/course/:id" element={<ProtectedRoute><CardDetail /></ProtectedRoute>} />
-              <Route path="/course/:id/learn" element={<ProtectedRoute><LearningModule /></ProtectedRoute>} />
-              <Route path="/course/:id/learning" element={<LearningModule />} />
-              <Route path="/course/:courseId/quiz/:quizId" element={<QuizAttempt />} />
+            <AuthProvider>
+              <ScrollToTop />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/Login" element={<LoginPage />} />
+                <Route path="/Signup" element={<Signup />} />
+                <Route path="/LoginPage" element={<LoginPage />} />
+                <Route path="/About" element={<About />} />
+                <Route path="/Contact" element={<Contact />} />
+                <Route path="/course" element={<Course />} />
+                <Route path="/book" element={<Book />} />
+                <Route path="/books" element={<BooksPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/schedule" element={<SchedulePage />} />
+                <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/learning/overview" element={<LearningOverview />} />
+                <Route path="/course/:id" element={<ProtectedRoute><CardDetail /></ProtectedRoute>} />
+                <Route path="/course/:id/learn" element={<ProtectedRoute><LearningModule /></ProtectedRoute>} />
+                <Route path="/course/:id/learning" element={<LearningModule />} />
+                <Route path="/course/:courseId/quiz/:quizId" element={<QuizAttempt />} />
 
-              {/* Success Routes */}
-              <Route path="/submit/success" element={<SubmissionSuccess />} />
-              
-              {/* Admin Routes */}
-              <Route path="/admin/courses" element={<AdminRoute><AdminCoursePage /></AdminRoute>} />
-              <Route path="/admin/courses/:courseId" element={<AdminRoute><AdminCourseDetails /></AdminRoute>} />
-              <Route path="/admin/courses/:courseId/structure" element={<AdminRoute><AdminCourseStructurePage /></AdminRoute>} />
-              <Route path="/admin/users" element={<AdminRoute><AdminUserManagementPage /></AdminRoute>} />
-              
-              {/* Catch-all Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                {/* Success Routes */}
+                <Route path="/submit/success" element={<SubmissionSuccess />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin/courses" element={<AdminRoute><AdminCoursePage /></AdminRoute>} />
+                <Route path="/admin/courses/:courseId" element={<AdminRoute><AdminCourseDetails /></AdminRoute>} />
+                <Route path="/admin/courses/:courseId/structure" element={<AdminRoute><AdminCourseStructurePage /></AdminRoute>} />
+                <Route path="/admin/users" element={<AdminRoute><AdminUserManagementPage /></AdminRoute>} />
+                
+                {/* Catch-all Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

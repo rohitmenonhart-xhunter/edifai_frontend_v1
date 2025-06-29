@@ -1,22 +1,21 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import authService from '@/services/authService';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/App';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  redirectTo = '/LoginPage' 
-}) => {
-  const isAuthenticated = authService.isAuthenticated();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
+  // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to="/LoginPage" state={{ from: location }} replace />;
   }
 
+  // Render children if authenticated
   return <>{children}</>;
 };
 
