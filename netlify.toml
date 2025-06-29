@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/api/*"
-  to = "https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app/api/:splat"
+  to = "https://a6ef-2405-201-e01b-e0b4-891d-fb29-7e4f-c049.ngrok-free.app/api/:splat"
   status = 200
   force = true
   headers = {X-From = "Netlify"}
@@ -20,9 +20,9 @@
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production.environment]
-  VITE_API_URL = "https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app"
+  VITE_API_URL = "https://a6ef-2405-201-e01b-e0b4-891d-fb29-7e4f-c049.ngrok-free.app"
 
 # Deploy Preview context: all deploys generated from a pull/merge request will
 # inherit these settings.
 [context.deploy-preview.environment]
-  VITE_API_URL = "https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app" 
+  VITE_API_URL = "https://a6ef-2405-201-e01b-e0b4-891d-fb29-7e4f-c049.ngrok-free.app" 

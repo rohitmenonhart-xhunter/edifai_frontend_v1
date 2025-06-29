@@ -2,7 +2,7 @@ import axios from 'axios';
 import { handleApiError } from '@/utils/apiUtils';
 
 // Fallback API URL in case proxy fails
-const FALLBACK_API_URL = 'https://3644-2405-201-e01b-e0b4-6946-b90-4182-ee94.ngrok-free.app';
+const FALLBACK_API_URL = 'https://a6ef-2405-201-e01b-e0b4-891d-fb29-7e4f-c049.ngrok-free.app';
 
 interface Section {
   id: string;
