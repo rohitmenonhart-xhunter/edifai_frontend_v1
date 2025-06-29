@@ -52,6 +52,9 @@ export const AuthContext = createContext<AuthContextType>({
   checkAuthStatus: () => {}
 });
 
+// Custom event for auth state changes
+export const AUTH_STATE_CHANGED_EVENT = 'auth-state-changed';
+
 // AuthProvider component
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,13 +62,24 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkAuthStatus = () => {
     const hasToken = authService.isAuthenticated();
+    const wasAuthenticated = isAuthenticated;
+    
     setIsAuthenticated(hasToken);
     
     if (hasToken) {
       try {
         const userStr = localStorage.getItem('user');
         if (userStr) {
-          setUser(JSON.parse(userStr));
+          const userData = JSON.parse(userStr);
+          setUser(userData);
+          
+          // Only dispatch event if state actually changed
+          if (!wasAuthenticated) {
+            // Dispatch custom event for components that might miss context updates
+            window.dispatchEvent(new CustomEvent(AUTH_STATE_CHANGED_EVENT, {
+              detail: { isAuthenticated: true, user: userData }
+            }));
+          }
         }
       } catch (error) {
         console.error("Error parsing user data:", error);
@@ -73,6 +87,14 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } else {
       setUser(null);
+      
+      // Only dispatch event if state actually changed
+      if (wasAuthenticated) {
+        // Dispatch custom event for logout
+        window.dispatchEvent(new CustomEvent(AUTH_STATE_CHANGED_EVENT, {
+          detail: { isAuthenticated: false, user: null }
+        }));
+      }
     }
   };
 

@@ -4,12 +4,37 @@ import { Bell, Heart, User, ArrowRight, LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../Assets/EDIFAI-1.svg"
 import authService from "@/services/authService";
-import { useAuth } from "@/App";
+import { useAuth, AUTH_STATE_CHANGED_EVENT } from "@/App";
 
 const Navbar = () => {
   const { isAuthenticated, user, checkAuthStatus } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [authState, setAuthState] = useState({ isAuthenticated, user });
+
+  // Listen for auth state changes
+  useEffect(() => {
+    // Update local state when context changes
+    setAuthState({ isAuthenticated, user });
+    
+    // Listen for auth state change events
+    const handleAuthChange = (event: any) => {
+      const { isAuthenticated, user } = event.detail;
+      console.log("Auth state changed event received in Navbar:", { isAuthenticated, user });
+      setAuthState({ isAuthenticated, user });
+    };
+    
+    window.addEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthChange);
+    
+    return () => {
+      window.removeEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthChange);
+    };
+  }, [isAuthenticated, user]);
+
+  // Force check auth status on mount
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   const handleLogout = () => {
     authService.logout();
@@ -50,7 +75,7 @@ const Navbar = () => {
 
         {/* Auth Buttons */}
         <div className="flex items-end justify-end space-x-4  w-[33%]">
-          {isAuthenticated ? (
+          {authState.isAuthenticated ? (
             <div className="flex items-center space-x-4">
               <Link to="/notifications">
                 <Button variant="ghost" size="icon" className="text-[#8A63FF]  border rounded-[50%] border-[#8A63FF] hover:text-white hover:bg-[#8A63FF]">
@@ -65,7 +90,7 @@ const Navbar = () => {
               <Link to="/profile">
                 <Button variant="outline" className="text-[#8A63FF] border-[#8A63FF] hover:bg-[#8A63FF] font-mont font-medium hover:text-white rounded-full flex items-center">
                   <User className="h-4 w-4 mr-2" />
-                  View Profile
+                  {authState.user?.name || 'Profile'}
                 </Button>
               </Link>
 

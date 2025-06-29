@@ -9,6 +9,7 @@ import Star from "../Assets/star.png";
 import ForgotPassword from "../components/ForgotPassword";
 import authService from "@/services/authService";
 import { toast } from "sonner";
+import { useAuth } from "@/App";
 
 interface Slide {
   title: string;
@@ -207,6 +208,7 @@ const Login: React.FC = () => {
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { checkAuthStatus } = useAuth();
 
   const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -231,10 +233,16 @@ const Login: React.FC = () => {
         
         console.log("Login response:", response);
         
+        // Update authentication state after successful login
+        checkAuthStatus();
+        
         // The login was successful if we got here without an exception
-        // since the response doesn't have a success property
         toast.success("Login successful!");
-        navigate("/"); // Redirect to home page after successful login
+        
+        // Add a small delay before navigation to ensure state updates
+        setTimeout(() => {
+          navigate("/");
+        }, 100);
       } catch (error: any) {
         console.error("Login error:", error);
         

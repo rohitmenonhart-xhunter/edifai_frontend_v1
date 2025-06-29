@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { handleApiError } from '@/utils/apiUtils';
+import { AUTH_STATE_CHANGED_EVENT } from '@/App';
 
 // Fallback API URL in case proxy fails
 const FALLBACK_API_URL = 'https://a6ef-2405-201-e01b-e0b4-891d-fb29-7e4f-c049.ngrok-free.app';
@@ -53,6 +54,14 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     localStorage.setItem('token', responseData.token);
     localStorage.setItem('user', JSON.stringify(responseData.user));
     
+    // Dispatch auth state changed event
+    window.dispatchEvent(new CustomEvent(AUTH_STATE_CHANGED_EVENT, {
+      detail: { 
+        isAuthenticated: true, 
+        user: responseData.user 
+      }
+    }));
+    
     return responseData;
   } catch (error) {
     console.log("Login error:", error);
@@ -77,6 +86,14 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
     // Store token in localStorage
     localStorage.setItem('token', responseData.token);
     localStorage.setItem('user', JSON.stringify(responseData.user));
+    
+    // Dispatch auth state changed event
+    window.dispatchEvent(new CustomEvent(AUTH_STATE_CHANGED_EVENT, {
+      detail: { 
+        isAuthenticated: true, 
+        user: responseData.user 
+      }
+    }));
     
     return responseData;
   } catch (error) {
@@ -116,6 +133,14 @@ export const verifyToken = async (token: string): Promise<boolean> => {
 export const logout = (): void => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  
+  // Dispatch auth state changed event
+  window.dispatchEvent(new CustomEvent(AUTH_STATE_CHANGED_EVENT, {
+    detail: { 
+      isAuthenticated: false, 
+      user: null 
+    }
+  }));
 };
 
 export const isAuthenticated = (): boolean => {
