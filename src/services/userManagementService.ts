@@ -3,7 +3,7 @@ import { handleApiError } from '@/utils/apiUtils';
 import { API_URL } from '@/config/api';
 
 // Fallback API URL in case proxy fails
-const FALLBACK_API_URL = 'https://a6ef-2405-201-e01b-e0b4-891d-fb29-7e4f-c049.ngrok-free.app';
+const FALLBACK_API_URL = 'https://server.edifai.in';
 
 // Update API URLs to use direct fallback URL
 const ADMIN_API_URL = `${FALLBACK_API_URL}/api/admin`;
