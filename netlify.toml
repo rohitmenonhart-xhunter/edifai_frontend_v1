@@ -20,7 +20,11 @@
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production.environment]
-  VITE_API_URL = "https://server.edifai.in"
+  VITE_API_URL = "https://13f8-2405-201-e01b-e0b4-4c5c-f95f-ac7e-644d.ngrok-free.app"
+
+# Development branch context
+[context.develop.environment]
+  VITE_API_URL = "https://13f8-2405-201-e01b-e0b4-4c5c-f95f-ac7e-644d.ngrok-free.app"
 
 # Deploy Preview context: all deploys generated from a pull/merge request will
 # inherit these settings.

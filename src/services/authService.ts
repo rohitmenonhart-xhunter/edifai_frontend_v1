@@ -3,7 +3,7 @@ import { handleApiError } from '@/utils/apiUtils';
 import { AUTH_STATE_CHANGED_EVENT } from '@/App';
 
 // Fallback API URL in case proxy fails
-const FALLBACK_API_URL = 'https://server.edifai.in';
+const FALLBACK_API_URL = 'https://13f8-2405-201-e01b-e0b4-4c5c-f95f-ac7e-644d.ngrok-free.app';
 
 // Update API URL to use direct fallback URL
 const AUTH_API_URL = `${FALLBACK_API_URL}/api/auth`;
@@ -147,6 +147,40 @@ export const isAuthenticated = (): boolean => {
   return !!localStorage.getItem('token');
 };
 
+/**
+ * Get current user data from the server
+ * @returns Current user data or null if not authenticated
+ */
+export const getCurrentUser = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found');
+
+    const response = await axios.get(`${AUTH_API_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    
+    // Try to get user from localStorage as fallback
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const userData = JSON.parse(userStr);
+        return { success: true, data: userData };
+      }
+    } catch (e) {
+      console.error('Error parsing user data from localStorage:', e);
+    }
+    
+    throw error;
+  }
+};
+
 export default {
   login,
   register,
@@ -154,5 +188,6 @@ export default {
   resetPassword,
   verifyToken,
   logout,
-  isAuthenticated
+  isAuthenticated,
+  getCurrentUser
 }; 
