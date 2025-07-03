@@ -3,7 +3,7 @@ import { API_URL } from '@/config/api';
 import { hasValidToken } from '@/utils/apiUtils';
 
 // Use a fallback URL if API_URL is not available
-const FALLBACK_API_URL = 'https://13f8-2405-201-e01b-e0b4-4c5c-f95f-ac7e-644d.ngrok-free.app';
+const FALLBACK_API_URL = 'https://server.edifai.in';
 
 // Define types
 export interface Assignment {

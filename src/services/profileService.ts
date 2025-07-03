@@ -3,7 +3,7 @@ import { handleApiError, hasValidToken } from '@/utils/apiUtils';
 import { API_URL } from '@/config/api';
 
 // Fallback API URL in case proxy fails
-const FALLBACK_API_URL = 'https://13f8-2405-201-e01b-e0b4-4c5c-f95f-ac7e-644d.ngrok-free.app';
+const FALLBACK_API_URL = 'https://server.edifai.in';
 
 // Type definitions
 export interface User {
