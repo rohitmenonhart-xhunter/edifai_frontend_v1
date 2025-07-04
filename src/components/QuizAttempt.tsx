@@ -34,6 +34,7 @@ const QuizAttempt: React.FC = () => {
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
   const [fullScreenWarning, setFullScreenWarning] = useState<boolean>(false);
+  const [fullScreenExitAttempts, setFullScreenExitAttempts] = useState<number>(0);
   
   // Load quiz data
   useEffect(() => {
@@ -61,9 +62,101 @@ const QuizAttempt: React.FC = () => {
   // Request full screen when quiz loads
   useEffect(() => {
     if (!loading && quiz && !quizCompleted) {
-      requestFullScreen();
+      // Attempt fullscreen with a slight delay to ensure DOM is ready
+      setTimeout(() => {
+        requestFullScreen();
+      }, 300);
     }
   }, [loading, quiz, quizCompleted]);
+
+  // Add focus/blur event handlers to detect when user switches tabs or windows
+  useEffect(() => {
+    if (quizCompleted || !quiz) return;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !quizCompleted) {
+        console.log('Tab became visible, checking fullscreen state');
+        
+        const isCurrentlyFullScreen = !!(
+          document.fullscreenElement || 
+          (document as any).webkitFullscreenElement || 
+          (document as any).mozFullScreenElement || 
+          (document as any).msFullscreenElement
+        );
+        
+        if (!isCurrentlyFullScreen) {
+          console.log('Not in fullscreen after visibility change, re-entering');
+          requestFullScreen();
+          setFullScreenWarning(true);
+        }
+      }
+    };
+    
+    // When window regains focus, check fullscreen state
+    const handleFocus = () => {
+      if (!quizCompleted) {
+        console.log('Window regained focus, checking fullscreen state');
+        
+        const isCurrentlyFullScreen = !!(
+          document.fullscreenElement || 
+          (document as any).webkitFullscreenElement || 
+          (document as any).mozFullScreenElement || 
+          (document as any).msFullscreenElement
+        );
+        
+        if (!isCurrentlyFullScreen) {
+          console.log('Not in fullscreen after focus, re-entering');
+          requestFullScreen();
+          setFullScreenWarning(true);
+        }
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [quiz, quizCompleted]);
+
+  // Handle ESC key to prevent exiting fullscreen
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !quizCompleted) {
+        // Stop propagation and prevent default to try to block the Escape key
+        e.stopPropagation();
+        e.preventDefault();
+        
+        console.log('Escape key intercepted');
+        
+        // Set a small timeout to re-enter fullscreen after the browser's exit fullscreen action
+        setTimeout(() => {
+          if (!document.fullscreenElement) {
+            requestFullScreen();
+            setFullScreenWarning(true);
+            setFullScreenExitAttempts(prev => prev + 1);
+            
+            if (fullScreenExitAttempts >= 1) {
+              toast.error("Please complete the quiz before exiting fullscreen mode", {
+                duration: 5000
+              });
+            }
+          }
+        }, 100);
+        
+        return false;
+      }
+    };
+
+    // Add event listener for keydown with capture phase to intercept early
+    document.addEventListener('keydown', handleKeyDown, true);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, [quizCompleted, fullScreenExitAttempts]);
 
   // Listen for fullscreen changes
   useEffect(() => {
@@ -77,9 +170,21 @@ const QuizAttempt: React.FC = () => {
 
       setIsFullScreen(isCurrentlyFullScreen);
       
-      // Show warning if exited fullscreen during quiz
+      // If exited fullscreen during quiz, immediately request fullscreen again
       if (!isCurrentlyFullScreen && !quizCompleted && quiz) {
-        setFullScreenWarning(true);
+        console.log('Fullscreen exited, attempting to re-enter');
+        // Small delay to let the browser finish exiting fullscreen before requesting it again
+        setTimeout(() => {
+          requestFullScreen();
+          setFullScreenWarning(true);
+          setFullScreenExitAttempts(prev => prev + 1);
+          
+          if (fullScreenExitAttempts >= 1) {
+            toast.error("You must complete the quiz before exiting fullscreen mode", {
+              duration: 5000
+            });
+          }
+        }, 100);
       }
     };
 
@@ -93,6 +198,52 @@ const QuizAttempt: React.FC = () => {
       document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
       document.removeEventListener('mozfullscreenchange', handleFullScreenChange);
       document.removeEventListener('MSFullscreenChange', handleFullScreenChange);
+    };
+  }, [quiz, quizCompleted, fullScreenExitAttempts]);
+
+  // Add a polling mechanism to ensure fullscreen is maintained
+  useEffect(() => {
+    if (quizCompleted || !quiz) return;
+    
+    const fullscreenCheckInterval = setInterval(() => {
+      const isCurrentlyFullScreen = !!(
+        document.fullscreenElement || 
+        (document as any).webkitFullscreenElement || 
+        (document as any).mozFullScreenElement || 
+        (document as any).msFullscreenElement
+      );
+      
+      if (!isCurrentlyFullScreen && !quizCompleted) {
+        console.log('Fullscreen check: not in fullscreen, attempting to re-enter');
+        requestFullScreen();
+        setFullScreenWarning(true);
+      }
+    }, 1000); // Check every second
+    
+    return () => {
+      clearInterval(fullscreenCheckInterval);
+    };
+  }, [quiz, quizCompleted]);
+  
+  // Add beforeunload event to warn users about closing the page
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!quizCompleted && quiz) {
+        // Standard for modern browsers
+        e.preventDefault();
+        
+        // For older browsers
+        e.returnValue = '';
+        
+        // Custom message (note: most modern browsers show their own generic message)
+        return 'You are in the middle of a quiz. If you leave, your progress will be lost.';
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [quiz, quizCompleted]);
   
@@ -118,42 +269,62 @@ const QuizAttempt: React.FC = () => {
   const requestFullScreen = () => {
     if (containerRef.current) {
       try {
-        if (containerRef.current.requestFullscreen) {
-          containerRef.current.requestFullscreen();
-        } else if ((containerRef.current as any).webkitRequestFullscreen) {
-          (containerRef.current as any).webkitRequestFullscreen();
-        } else if ((containerRef.current as any).mozRequestFullScreen) {
-          (containerRef.current as any).mozRequestFullScreen();
-        } else if ((containerRef.current as any).msRequestFullscreen) {
-          (containerRef.current as any).msRequestFullscreen();
-        }
-        setFullScreenWarning(false);
+        // Use a more comprehensive approach with promises and fallbacks
+        const element = containerRef.current;
+        
+        const enterFullscreen = async () => {
+          try {
+            if (element.requestFullscreen) {
+              await element.requestFullscreen();
+            } else if ((element as any).webkitRequestFullscreen) {
+              (element as any).webkitRequestFullscreen();
+            } else if ((element as any).mozRequestFullScreen) {
+              (element as any).mozRequestFullScreen();
+            } else if ((element as any).msRequestFullscreen) {
+              (element as any).msRequestFullscreen();
+            }
+            setFullScreenWarning(false);
+          } catch (err) {
+            console.error('Error requesting fullscreen:', err);
+            // Show warning but don't show error toast to avoid spamming the user
+            setFullScreenWarning(true);
+          }
+        };
+        
+        enterFullscreen();
       } catch (err) {
-        console.error('Error requesting fullscreen:', err);
-        toast.error('Failed to enter fullscreen mode. Please try again.');
+        console.error('Error in fullscreen request wrapper:', err);
+        setFullScreenWarning(true);
       }
     }
   };
 
-  // Exit full screen
+  // Exit full screen - only allowed after quiz completion
   const exitFullScreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if ((document as any).webkitExitFullscreen) {
-      (document as any).webkitExitFullscreen();
-    } else if ((document as any).mozCancelFullScreen) {
-      (document as any).mozCancelFullScreen();
-    } else if ((document as any).msExitFullscreen) {
-      (document as any).msExitFullscreen();
+    if (quizCompleted) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
+    } else {
+      toast.error("Please complete the quiz before exiting fullscreen mode");
+      requestFullScreen();
     }
   };
 
-  // Toggle fullscreen
+  // Toggle fullscreen - only allowed to enter, not exit during quiz
   const toggleFullScreen = () => {
-    if (isFullScreen) {
+    if (!isFullScreen) {
+      requestFullScreen();
+    } else if (quizCompleted) {
       exitFullScreen();
     } else {
-      requestFullScreen();
+      toast.error("Please complete the quiz before exiting fullscreen mode");
     }
   };
   
@@ -366,9 +537,9 @@ const QuizAttempt: React.FC = () => {
           <Alert variant="destructive" className="mb-4">
             <AlertDescription>
               <div className="flex items-center justify-between">
-                <span>This quiz requires fullscreen mode. Please enter fullscreen to continue.</span>
+                <span>This quiz requires fullscreen mode. Please do not exit fullscreen until you complete the quiz.</span>
                 <Button size="sm" onClick={requestFullScreen} className="ml-2 bg-red-600 hover:bg-red-700">
-                  Enter Fullscreen
+                  Return to Fullscreen
                 </Button>
               </div>
             </AlertDescription>
@@ -389,9 +560,10 @@ const QuizAttempt: React.FC = () => {
                 size="sm" 
                 className="h-8 px-2" 
                 onClick={toggleFullScreen}
-                title={isFullScreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                title={isFullScreen ? "Fullscreen mode required for quiz" : "Enter Fullscreen"}
+                disabled={isFullScreen && !quizCompleted}
               >
-                {isFullScreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                {isFullScreen ? <Minimize className="h-4 w-4 text-gray-400" /> : <Maximize className="h-4 w-4" />}
               </Button>
             </div>
           </div>
